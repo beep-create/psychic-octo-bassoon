@@ -2,24 +2,22 @@
 video="";
 status="";
 objects=[];
-object_to_detect="";
 synth = window.speechSynthesis;
+utterThis = new SpeechSynthesisUtterance(synth);
 
-function change_background() {
-    document.body.style.backgroundImage = "url('camera.jpg')";
-    console.log("united states canada mexico panama haiti jamaica peru republic dominican cuba carribean greenland el salvador too");
-    
-}
+
 
 function preload() {
-    video=createVideo('the_video.mp4');
-    video.hide();
+   
 
 }
 
 function setup() {
     canvas = createCanvas(480,380);
     canvas.center();
+    video = createCapture(VIDEO); 
+    video.size(380,380); 
+    video.hide();
 }
 
 function draw() {
@@ -35,24 +33,24 @@ function draw() {
             stroke("#FF5454");
             rect(objects[i].x, objects[i].y, objects[i].width, objects[i].height);
               
-
+            if(object_name == document.getElementById("input").value) {
+                video.stop();
+                objectDetector.detect(gotResults);
+                document.getElementById("status").innerHTML = "Status: Object(s) mentioned found!";
+                SpeechSynthesisUtterance("object mentioned found");
+                synth.speak(utterThis);
+            
+               }
+              else {
+                document.getElementById("status").innerHTML = "Status: Object(s) mentioned not found..";
+            
+              }
         }
-   }
-
-   if(object_to_detect == document.getElementById("input").innerHTML) {
-    video.stop();
-    objectDetector.detect(gotResults);
-    document.getElementById("status").innerHTML = "Status: Objects mentioned found!";
-    SpeechSynthesisUtterance("object mentioned found");
-    synth.speak(utterThis);
-
-   }
-  else {
-    document.getElementById("status").innerHTML = "Status: Object(s) mentioned not found..";
-  }
+   
 
 }
 
+}
 
 function gotResults(error,results) {
 if (error) {
@@ -72,14 +70,14 @@ objects=results;
 function start() {
     objectDetector = ml5.objectDetector('cocossd', modelLoaded);
     document.getElementById("status").innerHTML = "Status: Detecting objects...";
+    object_name = document.getElementById("input").value;
+    
 }
 
 function modelLoaded() {
 console.log("model loaded!");
 status=true;
-video.loop();
-video.speed(1);
-video.volume(0);
+
 
 
 }
